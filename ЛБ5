@@ -1,0 +1,372 @@
+Іра Гречин, [24.01.2023 18:18]
+#include <math.h>
+#include <cstdlib>
+#include <time.h>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+using namespace std;
+
+// У всіх завданнях забороняється змінювати сигнатуру функції!
+
+// Структура для зберігання даних про студентів
+struct Student {
+  string name;
+  string surname;
+  int mark1;
+  int mark2;
+  int mark3;
+  float rating;
+};
+
+// Функція виводу інформації про студента на рядковий потік functionOutput
+void PrintStudent(Student& student, stringstream& functionOutput) {
+  functionOutput << "Name: " << student.name << "\n";
+  functionOutput << "Surname: " << student.surname << "\n";
+  functionOutput << "Mark 1: " << student.mark1 << "\n";
+  functionOutput << "Mark 2: " << student.mark2 << "\n";
+  functionOutput << "Mark 3: " << student.mark3 << "\n";
+  functionOutput << "Rating: " << student.rating << "\n";
+  functionOutput << "\n";
+}
+
+// Структура вузла списку.
+struct Node {
+  // Розмістіть тут Ваш код
+  Student data;  // useful data
+  Node* next; // pointer to the next node
+};
+
+// Функція додавання вузла до списку на місце, яке визначене вказівником p
+void Add(Node*& p, Student d) {
+  // Розмістіть тут Ваш код
+  Node* temp = p;
+  p = new Node;
+  p->data = d;
+  p->next = temp;
+}
+
+// Функція виводу даних із вузла, який визначений вказівником p, на рядковий 
+// потік functionOutput
+// Функція повинна реалізувати вивід за допомогою функції PrintStudent
+void Show(Node* p, stringstream& functionOutput) {
+  // Розмістіть тут Ваш код
+  if (p) {
+    Student student;
+    student.name = p->data.name;
+    student.surname = p->data.surname;
+    student.mark1 = p->data.mark1;
+    student.mark2 = p->data.mark2;
+    student.mark3 = p->data.mark3;
+    student.rating = p->data.rating;
+    PrintStudent(student, functionOutput);
+  }
+}
+
+// Функція виводу даних зі списку, голова якого визначена вказівником p, на 
+// рядковий потік functionOutput
+void ShowList(Node* p, stringstream& functionOutput) {
+  // Розмістіть тут Ваш код
+  while (p)
+  {
+    Show(p, functionOutput);
+    p = p->next;
+  }
+}
+
+// Функція повертає вказівник на n-ий вузол списку, голова якого визначена 
+// вказівником p
+Node* Find(Node* p, int n) {
+  // Розмістіть тут Ваш код
+  int b = 1;
+  while ((b < n) && (p))
+  {
+    b++;
+    p = p->next;
+  }
+  return p;
+}
+
+// Функція повертає вказівник на останній вузол списку, голова якого визначена 
+// вказівником p
+Node* FindLast(Node* p) {
+
+  if (p){
+    while (p->next)
+      p = p->next;
+  }
+  return p;
+}
+
+// Функція реалізує видалення вузла, який визначений вказівником p
+void Remove(Node*& p) {
+ Node* temp = p->next;
+  delete p;
+  p = temp;
+}
+
+// Функція реалізує видалення списку, голова якого визначена вказівником p
+void RemoveAll(Node*& p) {
+  Node* temp;
+  while (p)
+  {
+    temp = p->next;
+    delete p;
+    p = temp;
+  }
+}
+
+Іра Гречин, [24.01.2023 18:18]
+
+
+// Функція повертає довжину (кількість вузлів) списку, голова якого визначена 
+// вказівником p
+int Length(Node* p) {
+  int length = 0;
+  while (p) {
+    p = p->next;
+    length++;
+  }
+  return length;
+}
+// Функція реалізує впорядкування списку студентів за прізвищем згідно абетки,
+// голова списку визначена вказівником p 
+void SortList(Node*& p) {
+  Node* sortlist = p, *temp = 0;
+  string sur, name;
+  int m1, m2, m3;
+  float r;
+  while (sortlist != 0) {
+    temp = sortlist->next;
+    while (temp != 0) {
+      if (sortlist->data.surname > temp->data.surname) {
+        sur = sortlist->data.surname;
+        name = sortlist->data.name;
+        m1 = sortlist->data.mark1;
+        m2 = sortlist->data.mark2;
+        m3 = sortlist->data.mark3;
+        r = sortlist->data.rating;
+        sortlist->data.surname = temp->data.surname;
+        sortlist->data.name = temp->data.name;
+        sortlist->data.mark1 = temp->data.mark1;
+        sortlist->data.mark2 = temp->data.mark2;
+        sortlist->data.mark3 = temp->data.mark3;
+        sortlist->data.rating = temp->data.rating;
+        temp->data.surname = sur;
+        temp->data.name = name;
+        temp->data.mark1 = m1;
+        temp->data.mark2 = m2;
+        temp->data.mark3 = m3;
+        temp->data.rating = r;
+      }
+      temp = temp->next;
+    }
+    sortlist = sortlist->next;
+  }
+}
+
+// Завдання 1
+// 
+// Функція приймає у якості аргументів: 
+// * рядок адреси (назви) файлу, який містить дані про студентів (інформація 
+//   про окремого студента записується з нового рядка, дані про студента 
+//   розділені пробілами та наведені у порядку слідування полів структури 
+//   Student (див. вище)); 
+// * ціле число nodeToShow, яке вказує номер вузла списку, який необхідно буде 
+//   показати за допомогою функції Show (див. тіло функції);
+// * ціле число addAfterNodeNum, яке вказує номер вузла списку, після якого 
+//   необхідно буде додати новий елемент списку, який міститиме дані останнього 
+//   доданого при формуванні списку студента (див. тіло функції);
+// * ціле число deleteNodeNum, яке вказує номер вузла списку, який необхідно 
+//   буде видалити за допомогою функції Delete (див. тіло функції).
+// 
+// У випадку коректного відкривання і зчитування файлу та коректних значень 
+// nodeToShow, addAfterNodeNum, deleteNodeNum, функція повинна повертати рядок,
+// який міститиме демонстрацію усіх реалізованих функцій (див. вище) для роботи 
+// зі списком (заготовки для виводу наявні у тілі функції). Наприклад:
+// Task1("testfiles/list3.txt", 3, 1, 1) - "Whole list:\nName: Lorem\nSurname: Ipsum\nMark 1: 4\nMark 2: 8\nMark 3: 1\nRating: 4.6\n\nName: Dolor\nSurname: Sit\nMark 1: 7\nMark 2: 1\nMark 3: 2\nRating: 2.1\n\nName: Amet\nSurname: Nihil\nMark 1: 9\nMark 2: 6\nMark 3: 4\nRating: 3.4\n\n\nThe 3 node:\nName: Amet\nSurname: Nihil\nMark 1: 9\nMark 2: 6\nMark 3: 4\nRating: 3.4\n\n\nNode added after the 1 node:\nName: Lorem\nSurname: Ipsum\nMark 1: 4\nMark 2: 8\nMark 3: 1\nRating: 4.6\n\nName: Amet\nSurname: Nihil\nMark 1: 9\nMark 2: 6\nMark 3: 4\nRating: 3.4\n\nName: Dolor\nSurname: Sit\nMark 1: 7\nMark 2: 1\nMark 3: 2\nRating: 2.1\n\nName: Amet\nSurname: Nihil\nMark 1: 9\nMark 2: 6\nMark 3: 4\nRating: 3.4\n\n\nLast element:\nName: Amet\nSurname: Nihil\nMark 1: 9\nMark 2: 6\nMark 3: 4\nRating: 3.4\n\n\nThe 1 node removed:\nName: Lorem\nSurname: Ipsum\nMark 1: 4\nMark 2: 8\nMark 3: 1\nRating: 4.6\n\nName: Dolor\nSurname: Sit\nMark 1: 7\nMark 2: 1\nMark 3: 2\nRating: 2.1\n\nName: Amet\nSurname: Nihil\nMark 1: 9\nMark 2: 6\nMark 3: 4\nRating: 3.4\n\n\nLength: 3\n\n\nSorted list:\nName: Lorem\nSurname: Ipsum\nMark 1: 4\nMark 2: 8\nMark 3: 1\nRating: 4.6\n\nName: Amet\nSurname: Nihil\nMark 1: 9\nMark 2: 6\nMark 3: 4\nRating: 3.4\n\nName: Dolor\nSurname: Sit\nMark 1: 7\nMark 2: 1\nMark 3: 2\nRating: 2.1\n\n\nWhole list removed:\n\n" (без лапок)
+// Читабельний варіант виводу знаходиться у файлі example.txt у корені проекту
+// 
+// У випадку відсутності файлу або неможливості відкрити його для роботи 
+// функція має повертати вивід: 
+// "No such file or file is corrupted" (без лапок). 
+//
+
+Іра Гречин, [24.01.2023 18:18]
+
+// У випадку некоректних значень параметрів функції, функція має повертати вивід
+// "Error" (без лапок).
+string Task1(string textFile, int nodeToShow, int addAfterNodeNum, int deleteNodeNum) {
+  // Об'єктом stringstream можна користуватись як і об'єктом iostream
+  // Наприклад, коректним є запис
+  // functionOutput << arr[i] << " ";
+  stringstream functionOutput;
+  Student student;
+  Node* header = nullptr, *current = nullptr;
+
+  if (nodeToShow < 1 || addAfterNodeNum < 1 || deleteNodeNum < 1) { return "Error"; }
+  fstream f;
+  f.open(textFile, ios::in);
+  if (!f) { return "No such file or file is corrupted"; }
+  char a[100];
+  string temp;
+
+  int i = 0, yes = 0, mark = 0, rating = 0;
+  f.getline(a, 100, '\n');
+  while (!f.eof() || a[i] != '\0')
+  {
+    if (yes == 0) {
+      if (a[i] >= 'a'&&a[i] <= 'z' || a[i] >= 'A'&&a[i] <= 'Z') {
+        temp += a[i];
+        if (a[i + 1] == ' ') {
+          student.name = temp;
+          temp = "";
+          i++;
+          yes = 1;
+        }
+      }
+    }
+    if (yes == 1) {
+      if (a[i] >= 'a'&&a[i] <= 'z' || a[i] >= 'A'&&a[i] <= 'Z') {
+        temp += a[i];
+        if (a[i + 1] == ' ') {
+          student.surname = temp;
+          temp = "";
+          i++;
+          mark = 0;
+        }
+      }
+    }
+    if (mark == 0) {
+      if (a[i] >= '0'&&a[i] <= '9') {
+        temp += a[i];
+        if (a[i + 1] >= '0'&&a[i + 1] <= '9') { i++; temp += a[i]; }
+        if (a[i + 1] == ' ') {
+          student.mark1 = stoi(temp);
+          temp = "";
+          yes = 1;
+          i++;
+          mark = 1;
+        }
+      }
+    }
+    if (yes == 1) {
+      if (a[i] >= '0'&&a[i] <= '9') {
+        temp += a[i];
+        if (a[i + 1] >= '0'&&a[i + 1] <= '9') { i++; temp += a[i]; }
+        if (a[i + 1] == ' ') {
+          student.mark2 = stoi(temp);
+          temp = "";
+          yes = 0;
+          i++;
+        }
+      }
+    }
+    if (yes == 0) {
+      if (a[i] >= '0'&&a[i] <= '9') {
+        temp += a[i];
+        if (a[i + 1] >= '0'&&a[i + 1] <= '9') { i++; temp += a[i]; }
+        if (a[i + 1] == ' ') {
+          student.mark3 = stoi(temp);
+          mark == 2;
+          temp = "";
+          i++;
+          yes = 2;
+          rating = 1;
+        }
+      }
+    }
+    if (rating == 1) {
+      if (a[i] >= '0'&&a[i] <= '9') {
+        temp += a[i];
+        if (a[i + 1] == '.') { i++; temp += a[i]; }
+        if (a[i + 1] >= '0'&&a[i + 1] <= '9') { i++; temp += a[i]; }
+        if (a[i + 1] == ' ' || a[i + 1] == '\n' || a[i + 1] == '\0') {
+          char m[3];
+          for (int j = 0; j <= 2; j++) {
+            m[j] = temp[j];
+          }
+          temp = m;
+          student.rating = stof(temp);
+          mark == 0;
+          temp = "";
+          i = 0;
+          yes = 0;
+          rating = 0;
+          Add(header, student);
+          f.getline(a, 100, '\n');
+          continue;
+        }
+      }
+    }
+    i++;
+  }
+  while (header != nullptr)
+  {
+    Node *p = header->next;
+    header->next = current;
+    current = header;
+    header = p;
+  }
+  header = current;
+  // Виведення всього списку 
+  functionOutput << "Whole list:" << endl;
+  ShowList(header, functionOutput);
+  functionOutput << "\n";
+  // Виведення вузла за номером nodeToShow
+  functionOutput << "The " << nodeToShow << " node:" << endl;
+  int k = 0;
+  current = header;
+  while (header)
+  {
+    if (k == nodeToShow - 1) {
+      Show(header, functionOutput);
+    }
+    header = header->next;
+    k++;
+  }
+  functionOutput << "\n";
+  header = current;
+  // Додавання вузла після вузла за номером addAfterNodeNum та виведення 
+  // всього списку для демонстрації результатів
+  functionOutput << "Node added after the " << addAfterNodeNum << " node:" << endl;
+  // Розмістіть тут Ваш код
+  Add((Find(header, addAfterNodeNum)->next), student);
+  ShowList(header, functionOutput);
+  functionOutput << "\n";
+  // Виведення останнього вузла списку
+  functionOutput << "Last element:" << endl;
+  Show(FindLast(header), functionOutput);
+  functionOutput << "\n";
+  // Видалення вузла за номером deleteNodeNum та виведення 
+  // всього списку для демонстрації результатів
+
+Іра Гречин, [24.01.2023 18:18]
+
+  functionOutput << "The " << deleteNodeNum << " node removed:" << endl;
+  Remove(Find(header, deleteNodeNum - 1)->next);
+  ShowList(header, functionOutput);
+  
+  functionOutput << "\n";
+  // Виведення довжини списку (кількості елементів)
+  functionOutput << "Length: ";
+  functionOutput << Length(header) << endl;
+  functionOutput << "\n\n";
+
+  // Виведення списку, відсортованого за прізвищами студентів згідно абетки
+  functionOutput << "Sorted list:" << endl;
+  SortList(header);
+  ShowList(header, functionOutput);
+
+  functionOutput << "\n";
+
+  // Видалення всього списку та виведення 
+  // всього списку для демонстрації результатів
+  functionOutput << "Whole list removed:" << endl;
+  RemoveAll(header);
+  ShowList(header, functionOutput);
+  functionOutput << "\n";
+
+  // Конвертування об'єкту stringstream у рядок для відповідності сигнатурі функції
+  return functionOutput.str();
+}
