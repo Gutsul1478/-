@@ -1,0 +1,373 @@
+
+#include <math.h>
+#include <cstdlib>
+#include <time.h>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+using namespace std;
+
+// У всіх завданнях забороняється змінювати сигнатуру функції!
+
+// Структура для зберігання даних про студентів
+struct Student {
+  string name = "";
+  int year = 0;
+  float mark = 0;
+};
+
+
+// Функція виводу інформації про студента на рядковий потік functionOutput
+void PrintStudent(Student& student, stringstream& functionOutput) {
+  functionOutput << "Name: " << student.name << "\n";
+  functionOutput << "Year: " << student.year << "\n";
+  functionOutput << "Mark: " << student.mark << "\n";
+}
+
+// Структура вузла дерева
+struct TreeNode {
+  Student student;
+  TreeNode* Left;
+  TreeNode* Right;
+
+};
+
+// Функція створення вузла дерева, за прізвищем, роком народження та оцінкою
+TreeNode* Create(string name, int year, float mark) {
+  TreeNode* t = new TreeNode;
+  t->student.mark = mark;
+  t->student.name = name;
+  t->student.year = year;
+  t->Left = nullptr;
+  t->Right = nullptr;
+  return t;
+}
+
+// Функція додавання вузла до дерева, яке упорядковане за прізвищами
+void AddName(string name, int year, float mark, TreeNode* v) {
+
+  if (name < v->student.name) {
+    if (v->Left) { AddName(name, year, mark, v->Left); }
+
+    else { v->Left = Create(name, year, mark); }
+  }
+  else {
+    if (v->Right)
+      AddName(name, year, mark, v->Right);
+    else
+      v->Right = Create(name, year, mark);
+  }
+}
+
+// Функція додавання вузла до дерева, яке упорядковане за роком народження
+void AddYear(string name, int year, float mark, TreeNode* v) {
+  if (year < v->student.year) {
+    if (v->Left) { AddYear(name, year, mark, v->Left); }
+
+    else { v->Left = Create(name, year, mark); }
+  }
+  else {
+    if (v->Right)
+      AddYear(name, year, mark, v->Right);
+    else
+      v->Right = Create(name, year, mark);
+  }
+}
+
+// Функція додавання вузла до дерева, яке упорядковане за оцінками
+void AddMark(string name, int year, float mark, TreeNode* v) {
+  if (mark < v->student.mark) {
+    if (v->Left) {
+      AddMark(name, year, mark, v->Left);
+    }
+
+    else { v->Left = Create(name, year, mark); }
+  }
+  else {
+    if (v->Right)
+      AddMark(name, year, mark, v->Right);
+    else
+      v->Right = Create(name, year, mark);
+  }
+}
+
+// Функція виводу упорядкованих даних із дерева, яке визначене вказівником v, 
+// на рядковий потік functionOutput
+// Функція повинна реалізувати вивід за допомогою функції PrintStudent
+void Show(TreeNode* v, stringstream& functionOutput) {
+  if (v->Left) { Show(v->Left, functionOutput); }
+
+  PrintStudent(v->student, functionOutput);
+
+  if (v->Right) { Show(v->Right, functionOutput); }
+}
+
+// Функція підрахунку кількості елементів дерева, яке визначене вказівником v
+int NodesCount(TreeNode* v) {
+  int c = 0;
+  if (v->Left) c += NodesCount(v->Left);
+  c++;
+  if (v->Right) c += NodesCount(v->Right);
+  return c;
+}
+
+// Функція реалізує видалення дерева, яке визначене вказівником v
+void DeleteTree(TreeNode* &v) {
+  if (v) {
+    if (v->Left)
+      DeleteTree(v->Left);
+    if (v->Right)
+      DeleteTree(v->Right);
+    delete v;
+    v = nullptr;
+  }
+}
+
+// Функція копіювання даних з дерева, яке визначене вказівником source,
+// у дерево, яке упорядковане за роком народження і визначене 
+// вказівником dest.
+// Параметр isRootElement слід використати для того, щоб уникнути
+// додавання елемента у корінь дерева, оскільки він має бути створений
+// заздалегідь для передачі вказівника на нього у якості dest.
+void TreeCpyYear(TreeNode* source, TreeNode* dest, bool isRootElement) {
+  // Розмістіть тут Ваш код
+
+  if (source == nullptr) { return; }
+
+  int year; float mark; string name;
+  year = source->student.year;
+  name = source->student.name;
+  mark = source->student.mark;
+
+
+
+
+  if (source->Left) { TreeCpyYear(source->Left, dest, isRootElement = false); }
+  if (source->Right) { TreeCpyYear(source->Right, dest, isRootElement = false); }
+  if (source->student.name == dest->student.name&&source->student.year == dest->student.year&&source->student.mark == dest->student.mark) {
+    //if all elements of student is equal, do nothing   
+  }
+  else { if (isRootElement == false) { AddYear(name, year, mark, dest); } }
+}
+
+// Функція копіювання даних з дерева, яке визначене вказівником source,
+// у дерево, яке упорядковане за оцінками і визначене вказівником dest.
+// Параметр isRootElement слід використати для того, щоб уникнути
+// додавання елемента у корінь дерева, оскільки він має бути створений
+// заздалегідь для передачі вказівника на нього у якості dest.
+void TreeCpyMark(TreeNode* source, TreeNode* dest, bool isRootElement) {
+  // Розмістіть тут Ваш код
+
+  if (source == nullptr) { return; }
+
+  int year; float mark; string name;
+  year = source->student.year;
+  name = source->student.name;
+  mark = source->student.mark;
+
+  if (source->Left) { TreeCpyMark(source->Left, dest, isRootElement = false); }
+  if (source->Right) { TreeCpyMark(source->Right, dest, isRootElement = false); }
+
+  if (source->student.name == dest->student.name&&source->student.year == dest->student.year&&source->student.mark == dest->student.mark) {
+    //if all elements of student is equal, do nothing   
+  }
+  else { if (isRootElement == false) { AddMark(name, year, mark, dest); } }
+}
+// Завдання 1
+// 
+// Функція приймає у якості аргументу рядок адреси (назви) файлу, який містить 
+// дані про студентів (інформація про окремого студента записується з нового 
+// рядка, дані про студента розділені пробілами та наведені у порядку 
+// слідування полів структури Student (див. вище)).
+// 
+// У випадку коректного відкривання і зчитування файлу функція повинна 
+// повертати рядок, який містить: 
+// * вивід дерева, упорядкованого за прізвищами (за абеткою) студентів 
+//   (інформацію про яких зчитано з файлу) та кількість вузлів у ньому з нового 
+//   рядка; 
+// * вивід дерева, упорядковного за роком народження (за зростанням) студентів 
+//   (дані для цього дерева отримати з дерева, упорядкованого за прізвищами) та 
+//   кількість вузлів у ньому з нового рядка; 
+// * вивід дерева, упорядковного за оцінками (за зростанням) студентів (дані 
+//   для цього дерева отримати з дерева, упорядкованого за роком народження) та 
+//   кількість вузлів у ньому з нового рядка. 
+// Наприклад:
+// Task1("testfiles/tree2.txt") - "Sorted by name:\nName: Artemenko\nYear: 1581\nMark: 5\nName: Ivanenko\nYear: 1747\nMark: 3.3\nName: Petrenko\nYear: 1676\nMark: 4.2\nName: Semenenko\nYear: 1492\nMark: 4.1\nCount of nodes = 4\n\nSorted by year:\nName: Semenenko\nYear: 1492\nMark: 4.1\nName: Artemenko\nYear: 1581\nMark: 5\nName: Petrenko\nYear: 1676\nMark: 4.2\nName: Ivanenko\nYear: 1747\nMark: 3.3\nCount of nodes = 4\n\nSorted by mark:\nName: Ivanenko\nYear: 1747\nMark: 3.3\nName: Semenenko\nYear: 1492\nMark: 4.1\nName: Petrenko\nYear: 1676\nMark: 4.2\nName: Artemenko\nYear: 1581\nMark: 5\nCount of nodes = 4\n" (без лапок)
+// Читабельний варіант виводу знаходиться у файлі example.txt у корені проекту
+// 
+// У випадку відсутності файлу або неможливості відкрити його для роботи 
+// функція має повертати вивід: 
+// "No such file or file is corrupted" (без лапок). 
+string Task1(string textFile) {
+  // Об'єктом stringstream можна користуватись як і об'єктом iostream
+  // Наприклад, коректним є запис
+  // functionOutput << arr[i] << " ";
+  stringstream functionOutput;
+  ifstream tFile(textFile);
+  if (!tFile) { return "No such file or file is corrupted"; }
+  Student student;
+  TreeNode* treeName = nullptr;
+  bool isRoot = true;
+  // Побудова дерева
+  string name;
+  int year; float mark;
+  TreeNode* root = nullptr;
+  TreeNode* root1 = nullptr;
+  TreeNode* root2 = nullptr;
+  TreeNode* tree = nullptr;
+  TreeNode* tree1 = nullptr;
+  TreeNode* tree2 = nullptr;
+  bool yesZero = false;
+  // Побудова списку
+  char a[100];
+  string temp;
+  int i = 0, yes = 0, mark1 = 0;
+
+
+
+  tFile.getline(a, 100, '\n');
+  while (!tFile.eof() || a[i] != '\0')
+  {
+    if (yes == 0) {
+      if (a[i] >= 'a' && a[i] <= 'z' || a[i] >= 'A' && a[i] <= 'Z') {
+        temp += a[i];
+        if (a[i + 1] == ' ') {
+          name = temp;
+          temp = "";
+          i++;
+          yes = 1;
+          mark1 = 1;
+        }
+      }
+    }
+    if (mark1 == 1) {
+      if (a[i] >= '0' && a[i] <= '9') {
+        temp += a[i];
+        if (a[i + 1] >= '0' && a[i + 1] <= '9') { i++; temp += a[i]; }
+        if (a[i + 1] == ' ') {
+          year = stoi(temp);
+          temp = "";
+          yes = 1;
+          i++;
+          mark1 = 2;
+        }
+      }
+    }
+    if (mark1 == 2) {
+      if (a[i] >= '0' && a[i] <= '9') {
+        temp += a[i];
+        i++;
+        while (a[i] != '\0') {
+          if (a[i] >= '0' && a[i] <= '9' || a[i] == '.') { temp += a[i]; }
+          i++;
+        }
+        if (a[i] == ' ' || a[i] == '\n' || a[i] == '\0') {
+          mark = stof(temp);
+          mark1 == 0;
+          temp = "";
+          i = 0;
+          yes = 0;
+          mark1 = 0;
+          root = Create(name, year, mark);
+          root1 = Create(name, year, mark);
+          root2 = Create(name, year, mark);
+          tFile.getline(a, 100, '\n');
+          break;
+        }
+      }
+    }
+    i++;
+  }
+  tree = root;
+  tree1 = root1;
+  tree2 = root2;
+  
+  while (!tFile.eof() || a[i] != '\0')
+  {
+    if (yes == 0) {
+      if (a[i] >= 'a' && a[i] <= 'z' || a[i] >= 'A' && a[i] <= 'Z') {
+        temp += a[i];
+        if (a[i + 1] == ' ') {
+          name = temp;
+          temp = "";
+          i++;
+          yes = 1;
+          mark1 = 1;
+        }
+      }
+    }
+    if (mark1 == 1) {
+      if (a[i] >= '0' && a[i] <= '9') {
+        temp += a[i];
+        if (a[i + 1] >= '0' && a[i + 1] <= '9') { i++; temp += a[i]; }
+        if (a[i + 1] == ' ') {
+          year = stoi(temp);
+          temp = "";
+          yes = 1;
+          i++;
+          mark1 = 2;
+        }
+      }
+    }
+    if (mark1 == 2) {
+      if (a[i] >= '0' && a[i] <= '9') {
+        temp += a[i];
+        i++;
+        while (a[i] != '\0') {
+          if (a[i] >= '0' && a[i] <= '9' || a[i] == '.') { temp += a[i]; }
+          i++;
+        }
+        if (a[i] == ' ' || a[i] == '\n' || a[i] == '\0') {
+          mark = stof(temp);
+          temp = "";
+          mark1 == 0;
+          i = 0;
+          yes = 0;
+          mark1 = 0;
+          AddName(name, year, mark, tree);
+
+          tFile.getline(a, 100, '\n');
+          continue;
+        }
+      }
+    }
+    i++;
+  }
+  
+  TreeCpyYear(tree, tree1, isRoot);
+
+  isRoot = true;
+  TreeCpyMark(tree1, tree2, isRoot);
+
+  // Виведення дерева, яке упорядковане за прізвищами
+  functionOutput << "Sorted by name:" << endl;
+  tree = root;
+  Show(tree, functionOutput);
+  functionOutput << "Count of nodes = " << NodesCount(tree) << endl;
+
+  // Перенесення даних з дерева, упорядкованого за прізвищами у дерево,
+  // упорядковане за роком народження
+  // Розмістіть тут Ваш код
+
+  // Виведення дерева, яке упорядковане за роком народження
+  tree1 = root1;
+  functionOutput << endl << "Sorted by year:" << endl;
+  Show(tree1, functionOutput);
+
+  functionOutput << "Count of nodes = " << NodesCount(tree1) << endl;
+  // Перенесення даних з дерева, упорядкованого за роком народження у дерево,
+  // упорядковане за оцінками
+  // Розмістіть тут Ваш код
+  // Виведення дерева, яке упорядковане за оцінками
+  tree2 = root2;
+  functionOutput << endl << "Sorted by mark:" << endl;
+  Show(tree2, functionOutput);
+  functionOutput << "Count of nodes = " << NodesCount(tree2) << endl;
+
+  // Видалення дерев 
+  DeleteTree(tree);
+  DeleteTree(tree1);
+  DeleteTree(tree2);
+  // Конвертування об'єкту stringstream у рядок для відповідності сигнатурі функції
+  return functionOutput.str();
+}
